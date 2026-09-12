@@ -1,0 +1,15 @@
+D:\LNY\3.1\CPP\src\Cli\bin\Debug\net10.0\Cli.exe
+D:\LNY\3.1\CPP\src\Cli\bin\Debug\net10.0\Cli.deps.json
+D:\LNY\3.1\CPP\src\Cli\bin\Debug\net10.0\Cli.runtimeconfig.json
+D:\LNY\3.1\CPP\src\Cli\bin\Debug\net10.0\Cli.dll
+D:\LNY\3.1\CPP\src\Cli\bin\Debug\net10.0\Cli.pdb
+D:\LNY\3.1\CPP\src\Cli\obj\Debug\net10.0\Cli.GeneratedMSBuildEditorConfig.editorconfig
+D:\LNY\3.1\CPP\src\Cli\obj\Debug\net10.0\Cli.AssemblyInfoInputs.cache
+D:\LNY\3.1\CPP\src\Cli\obj\Debug\net10.0\Cli.AssemblyInfo.cs
+D:\LNY\3.1\CPP\src\Cli\obj\Debug\net10.0\Cli.csproj.CoreCompileInputs.cache
+D:\LNY\3.1\CPP\src\Cli\obj\Debug\net10.0\Cli.sourcelink.json
+D:\LNY\3.1\CPP\src\Cli\obj\Debug\net10.0\Cli.dll
+D:\LNY\3.1\CPP\src\Cli\obj\Debug\net10.0\refint\Cli.dll
+D:\LNY\3.1\CPP\src\Cli\obj\Debug\net10.0\Cli.pdb
+D:\LNY\3.1\CPP\src\Cli\obj\Debug\net10.0\Cli.genruntimeconfig.cache
+D:\LNY\3.1\CPP\src\Cli\obj\Debug\net10.0\ref\Cli.dll
