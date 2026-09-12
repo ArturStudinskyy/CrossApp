@@ -6,10 +6,6 @@
 **Сутності:** Product (товар), StockBatch (партія), Warehouse (склад), Movement (переміщення).
 **Призначення:** облік залишків товарів по партіях на складах та фіксація переміщень товару.
 
-**Чому саме ця область:** ієрархія Product → StockBatch → Warehouse → Movement добре
-лягає на майбутні етапи курсу: тиждень 2 (Core — логіка обліку залишків),
-тиждень 10 (Api — перегляд залишків, реєстрація переміщень),
-тиждень 12 (Blazor — таблиця залишків, форма переміщення).
 
 ## Запуск
 
@@ -22,3 +18,27 @@ dotnet run --project src/Cli
 
 .NET SDK 10.0.302, RID: win-x64, OS: Windows 10.0.26200
 Редактор: VS Code
+
+### 1. Публікація self-contained під двома RID
+
+Команди:
+\`\`\`bash
+dotnet publish src/Cli -c Release -r win-x64   --self-contained true
+dotnet publish src/Cli -c Release -r linux-x64 --self-contained true
+\`\`\`
+
+Порівняння розміру каталогів publish:
+
+| RID       | Розмір каталогу publish |
+|-----------|-------------------------|
+| win-x64   | 76,651177406311 МБ      |
+| linux-x64 | 78,8115434646606 МБ     |
+
+### 2. Прапорець --json
+
+Перевірка:
+
+\`\`\`bash
+dotnet run --project src/Cli
+dotnet run --project src/Cli -- --json
+\`\`\`

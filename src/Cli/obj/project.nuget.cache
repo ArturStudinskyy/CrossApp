@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "cge+5OEv4SM=",
+  "dgSpecHash": "ZnA+ja86kcU=",
   "success": true,
   "projectFilePath": "D:\\LNY\\3.1\\CPP\\src\\Cli\\Cli.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Artur\\.nuget\\packages\\microsoft.netcore.app.runtime.linux-x64\\10.0.10\\microsoft.netcore.app.runtime.linux-x64.10.0.10.nupkg.sha512",
+    "C:\\Users\\Artur\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.linux-x64\\10.0.10\\microsoft.aspnetcore.app.runtime.linux-x64.10.0.10.nupkg.sha512",
+    "C:\\Users\\Artur\\.nuget\\packages\\microsoft.netcore.app.host.linux-x64\\10.0.10\\microsoft.netcore.app.host.linux-x64.10.0.10.nupkg.sha512"
+  ],
   "logs": []
 }
