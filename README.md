@@ -9,8 +9,11 @@
 
 ## Запуск
 
-\`\`\`bash
+\`\`\`
 dotnet build
+\`\`\`
+
+\`\`\`
 dotnet run --project src/Cli
 \`\`\`
 
@@ -22,8 +25,11 @@ dotnet run --project src/Cli
 ### 1. Публікація self-contained під двома RID
 
 Команди:
-\`\`\`bash
+\`\`\`
 dotnet publish src/Cli -c Release -r win-x64   --self-contained true
+\`\`\`
+
+\`\`\`
 dotnet publish src/Cli -c Release -r linux-x64 --self-contained true
 \`\`\`
 
@@ -38,7 +44,9 @@ dotnet publish src/Cli -c Release -r linux-x64 --self-contained true
 
 Перевірка:
 
-\`\`\`bash
+\`\`\`
 dotnet run --project src/Cli
+\`\`\`
+\`\`\`
 dotnet run --project src/Cli -- --json
 \`\`\`
