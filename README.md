@@ -8,41 +8,49 @@
 
 **Призначення:** облік залишків товарів по партіях на складах та фіксація переміщень товару.
 
+## Структура рішення
 
-## Запуск
+CrossApp/
+├── CrossApp.sln
+├── README.md
+├── .gitignore
+└── src/
+    ├── Core/          # Спільна логіка (збір даних про середовище, домен)
+    │   ├── Core.csproj
+    │   ├── EnvironmentInfo.cs
+    │   ├── Dto/       # record-типи формату даних
+    │   ├── Domain/    # сутності з поведінкою та інваріантами
+    │   └── Storage/   # реалізації сховищ
+    └── Cli/           # Точка входу (консольний інтерфейс)
+        ├── Cli.csproj # Містить ProjectReference на Core
+        └── Program.cs
 
-\\dotnet build
+## Команди
 
-\\dotnet run --project src/Cli
+- **Збірка:** `dotnet build` (збирає всі проєкти в solution, включно з multi-targeting під net8.0 та net10.0)
 
-## Середовище
+- **Запуск:** `dotnet run --project src/Cli`
 
-.NET SDK 10.0.302, RID: win-x64, OS: Windows 10.0.26200
+- **Запуск із JSON:** `dotnet run --project src/Cli -- --json`
 
-Редактор: VS Code
+- **Публікація (Self-contained):** `dotnet publish src/Cli -c Release -r win-x64 --self-contained true`
 
+## Режими публікації та їх розміри (win-x64)
 
-### 1. Публікація self-contained під двома RID
+| Режим публікації | RID | Розмір publish | Потрібен runtime | Примітка |
+| :--- | :--- | :--- | :--- | :--- |
+| Framework-dependent | win-x64 | ~19.5 МБ* | Так (.NET 10) | Лише код і залежності |
+| Self-contained | win-x64 | ~58.9 МБ | Ні | Включає .NET Runtime |
+| Self-contained + SingleFile | win-x64 | ~70.2 МБ | Ні | Об'єднано в один .exe файл |
+| Self-contained + Trimmed | win-x64 | ~19.5 МБ | Ні | Видалено невикористаний код |
 
-Команди:
+*\*Примітка: розмір Framework-dependent у 19.5 МБ зумовлений тим, що під час послідовної публікації команда `dotnet publish` не видаляє старі файли з папки. Чистий розмір цього режиму становить близько 0.2 МБ.*
 
-\\dotnet publish src/Cli -c Release -r win-x64   --self-contained true\\
+**Чому trimming (PublishTrimmed=true) небезпечний для коду з рефлексією:**
+Оптимізатор (trimmer) аналізує код статично і видаляє все, до чого немає прямих викликів. Оскільки `JsonSerializer` (який використовується при прапорці `--json`) зчитує властивості об'єкта під час виконання через рефлексію, оптимізатор не бачить цих викликів на етапі компіляції. Це призводить до помилкового видалення необхідних типів та поломки серіалізації JSON під час роботи застосунку.
 
-\\dotnet publish src/Cli -c Release -r linux-x64 --self-contained true\\
-
-
-Порівняння розміру каталогів publish:
-
-| RID       | Розмір каталогу publish |
-|-----------|-------------------------|
-| win-x64   | 76,651177406311 МБ      |
-| linux-x64 | 78,8115434646606 МБ     |
-
-### 2. Прапорець --json
-
-Перевірка:
-
-\\dotnet run --project src/Cli
-
-dotnet run --project src/Cli -- --json
-
+## Середовище розробки
+- .NET SDK 10.0.302
+- Базовий RID: win-x64
+- OS: Windows 10.0.26200
+- Редактор: VS Code

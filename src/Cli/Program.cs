@@ -20,7 +20,12 @@ var info = new EnvironmentInfo(
 
 if (jsonMode)
 {
-    var json = JsonSerializer.Serialize(info, new JsonSerializerOptions { WriteIndented = true });
+    var jsonOptions = new JsonSerializerOptions
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
+    var json = JsonSerializer.Serialize(info, jsonOptions);
     Console.WriteLine(json);
 }
 else
