@@ -1,56 +1,82 @@
-# CrossApp
+# CrossApp — Практикум з крос-платформного програмування
 
-Наскрізний проєкт з крос-платформного програмування.
+**Студент:** Ціздин Роман, група ФЕІ-35  
+**Проєкт:** Наскрізна розробка системи обліку (Склад).
 
-**Предметна область:** Склад.
+## 1. Предметна область
+* **Призначення:** Облік продуктів, партій, їх переміщення та контроль термінів придатності.
+* **Сутності:** `Product` (товар), `StockBatch` (партія), `Warehouse` (склад), `Movement` (переміщення).
 
-**Сутності:** Product (товар), StockBatch (партія), Warehouse (склад), Movement (переміщення).
+## 2. Структура рішення
 
-**Призначення:** облік залишків товарів по партіях на складах та фіксація переміщень товару.
+Проєкт розділено на ядро бізнес-логіки та інтерфейс користувача:
 
-## Структура рішення
-
+```text
 CrossApp/
-├── CrossApp.sln
-├── README.md
-├── .gitignore
+├── CrossApp.slnx
+├── data/                # Тестові файли (.csv, .json)
 └── src/
-    ├── Core/          # Спільна логіка (збір даних про середовище, домен)
-    │   ├── Core.csproj
-    │   ├── EnvironmentInfo.cs
-    │   ├── Dto/       # record-типи формату даних
-    │   ├── Domain/    # сутності з поведінкою та інваріантами
-    │   └── Storage/   # реалізації сховищ
-    └── Cli/           # Точка входу (консольний інтерфейс)
-        ├── Cli.csproj # Містить ProjectReference на Core
+    ├── Core/            # Бізнес-логіка (Class Library). Не залежить від Cli.
+    │   ├── Core.csproj  # Multi-targeting (net8.0; net10.0)
+    │   ├── Dto/         # Моделі даних
+    │   └── Import/      # Логіка парсингу (CSV, JSON)
+    └── Cli/             # Консольний інтерфейс (Console App). Посилається на Core.
+        ├── Cli.csproj
         └── Program.cs
+```
 
-## Команди
+## 3. Збірка та запуск
 
-- **Збірка:** `dotnet build` (збирає всі проєкти в solution, включно з multi-targeting під net8.0 та net10.0)
+**Збірка проєкту:**
+```bash
+dotnet build
+```
 
-- **Запуск:** `dotnet run --project src/Cli`
+**Сценарії запуску:**
+```bash
+# Імпорт стандартного CSV (data/sample.csv)
+dotnet run --project src/Cli
 
-- **Запуск із JSON:** `dotnet run --project src/Cli -- --json`
+# Імпорт JSON-файлу
+dotnet run --project src/Cli -- data/sample.json
 
-- **Публікація (Self-contained):** `dotnet publish src/Cli -c Release -r win-x64 --self-contained true`
+# Імпорт змішаного CSV-файлу
+dotnet run --project src/Cli -- data/mixed.csv
 
-## Режими публікації та їх розміри (win-x64)
+# Системна інформація
+dotnet run --project src/Cli -- --info
+```
 
-| Режим публікації | RID | Розмір publish | Потрібен runtime | Примітка |
-| :--- | :--- | :--- | :--- | :--- |
-| Framework-dependent | win-x64 | ~19.5 МБ* | Так (.NET 10) | Лише код і залежності |
-| Self-contained | win-x64 | ~58.9 МБ | Ні | Включає .NET Runtime |
-| Self-contained + SingleFile | win-x64 | ~70.2 МБ | Ні | Об'єднано в один .exe файл |
-| Self-contained + Trimmed | win-x64 | ~19.5 МБ | Ні | Видалено невикористаний код |
+## 4. Формат даних та обробка помилок
 
-*\*Примітка: розмір Framework-dependent у 19.5 МБ зумовлений тим, що під час послідовної публікації команда `dotnet publish` не видаляє старі файли з папки. Чистий розмір цього режиму становить близько 0.2 МБ.*
+* **CSV:** Кодування UTF-8, роздільник `;`. Заголовок пропускається автоматично.
+* **Числа:** Парсяться через `CultureInfo.InvariantCulture`.
+* **Відмовостійкість:** Помилкові рядки не "крашать" програму. Результат збирається у `ImportResult<T>`, який містить список успішних записів та масив локалізованих помилок (з номерами рядків).
 
-**Чому trimming (PublishTrimmed=true) небезпечний для коду з рефлексією:**
-Оптимізатор (trimmer) аналізує код статично і видаляє все, до чого немає прямих викликів. Оскільки `JsonSerializer` (який використовується при прапорці `--json`) зчитує властивості об'єкта під час виконання через рефлексію, оптимізатор не бачить цих викликів на етапі компіляції. Це призводить до помилкового видалення необхідних типів та поломки серіалізації JSON під час роботи застосунку.
+## 5. Режими публікації (win-x64)
 
-## Середовище розробки
-- .NET SDK 10.0.302
-- Базовий RID: win-x64
-- OS: Windows 10.0.26200
-- Редактор: VS Code
+| Режим публікації | Команда (`dotnet publish src/Cli -c Release -r win-x64...`) | Розмір | Потрібен .NET |
+| :--- | :--- | :--- | :--- |
+| **Framework-dependent** | `--self-contained false` | ~200 КБ | Так |
+| **Self-contained** | `--self-contained true` | ~76.6 МБ | Ні |
+| **Single-File** | `--self-contained true -p:PublishSingleFile=true` | ~70.1 МБ | Ні |
+| **Trimmed** | `... -p:PublishSingleFile=true -p:PublishTrimmed=true` | ~12.5 МБ | Ні |
+
+*Примітка: Trimming суттєво зменшує розмір файлу, але може зламати серіалізацію JSON, оскільки видаляє класи, які викликаються динамічно через рефлексію.*
+
+**Прямий запуск після публікації:**
+```cmd
+.\publish\self-contained\Cli.exe
+.\publish\self-contained\Cli.exe ..\..\data\sample.csv
+```
+
+## 6. Multi-targeting
+Бібліотека `Core` збирається одночасно під `net8.0` та `net10.0`. Для перевірки використано умовну компіляцію:
+
+```csharp
+#if NET10_0_OR_GREATER
+    private const string CurrentBuildNote = "Збірка під net10.0";
+#else
+    private const string CurrentBuildNote = "Збірка під net8.0";
+#endif
+```
