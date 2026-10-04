@@ -1,0 +1,38 @@
+[
+    {
+        "id": "P-001",
+        "sku": "ARO-MILK-900",
+        "name": "Молоко ARO 2.5% 900мл",
+        "unit": "шт",
+        "quantity": 48,
+        "note": "Зберігати в холодильнику"
+    },
+    {
+        "id": "P-002",
+        "sku": "METRO-RICE-1KG",
+        "name": "Рис Metro Chef довгозернистий 1кг",
+        "unit": "шт",
+        "quantity": 30
+    },
+    {
+        "id": "P-003",
+        "sku": "RIOBA-COFFEE-1KG",
+        "name": "Кава Rioba зернова 1кг",
+        "unit": "шт",
+        "quantity": 20
+    },
+    {
+        "id": "P-004",
+        "sku": "COCA-15",
+        "name": "Coca-Cola 1.5л",
+        "unit": "шт",
+        "quantity": 60
+    },
+    {
+        "id": "P-005",
+        "sku": "BARILLA-500",
+        "name": "Макарони Barilla Spaghetti 500г",
+        "unit": "шт",
+        "quantity": 36
+    }
+]

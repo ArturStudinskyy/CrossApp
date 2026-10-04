@@ -1,0 +1,14 @@
+id;sku;name;unit;quantity
+P-001;ARO-MILK-900;Молоко ARO 2.5% 900мл;шт;48
+P-002;METRO-RICE-1KG;Рис Metro Chef довгозернистий 1кг;шт;30
+P-003;RIOBA-COFFEE-1KG;Кава Rioba зернова 1кг;шт;20
+P-004;COCA-15;Coca-Cola 1.5л;шт;60
+P-005;BARILLA-500;Макарони Barilla Spaghetti 500г;шт;36
+P-006;WATER-15;Вода мінеральна 1.5л;шт;72
+P-007;HEINZ-570;Кетчуп Heinz 570г;шт;24
+P-008;ARO-TUNA-185;Тунець ARO у власному соку 185г;шт;40
+P-009;METRO-OIL-1L;Олія Metro Chef соняшникова 1л;шт;50
+P-010;RIOBA-TEA-100;Чай Rioba чорний 100 пакетиків;уп;15
+P-011;ARO-SUGAR;Цукор ARO 1кг;шт
+P-012;METRO-FLOUR;Борошно Metro Chef 2кг;шт;багато
+P-013;;Шоколад молочний;шт;10

@@ -1,82 +1,217 @@
 # CrossApp — Практикум з крос-платформного програмування
 
 **Студент:** Студинський Артур, група ФЕІ-35  
-**Проєкт:** Наскрізна розробка системи обліку (Склад).
+**Семестровий проєкт:** Наскрізна розробка модульної системи обліку (тижні 1–16).
 
-## 1. Предметна область
-* **Призначення:** Облік продуктів, партій, їх переміщення та контроль термінів придатності.
-* **Сутності:** `Product` (товар), `StockBatch` (партія), `Warehouse` (склад), `Movement` (переміщення).
+---
 
-## 2. Структура рішення
+## 1. Предметна область (Domain)
 
-Проєкт розділено на ядро бізнес-логіки та інтерфейс користувача:
+* **Назва:** Склад (Warehouse Management System — продовольчі товари METRO).
+* **Призначення:** Облік товарів на складі, контроль залишків, надходжень та переміщень між складськими локаціями.
+* **Ключові сутності:**
+  * `Product` — товар або номенклатурна позиція складу.
+  * `StockBatch` — партія товару з інформацією про кількість та дату надходження.
+  * `Warehouse` — склад або складська локація.
+  * `Movement` — операція надходження, переміщення або списання товарів.
 
-```text
+---
+
+## 2. Архітектура та структура рішення (Solution)
+
+Проєкт організовано за принципом відокремлення консольного інтерфейсу від основної логіки:
+
+```text id="1dvvan"
 CrossApp/
 ├── CrossApp.slnx
-├── data/                # Тестові файли (.csv, .json)
+├── README.md
+├── .gitignore
+├── data/
+│   ├── sample.csv
+│   ├── correct.csv
+│   ├── sample.json
+│   └── mixed.csv
 └── src/
-    ├── Core/            # Бізнес-логіка (Class Library). Не залежить від Cli.
-    │   ├── Core.csproj  # Multi-targeting (net8.0; net10.0)
-    │   ├── Dto/         # Моделі даних
-    │   └── Import/      # Логіка парсингу (CSV, JSON)
-    └── Cli/             # Консольний інтерфейс (Console App). Посилається на Core.
+    ├── Core/
+    │   ├── Core.csproj
+    │   ├── EnvironmentInfo.cs
+    │   ├── Dto/
+    │   │   ├── ImportEntityDto.cs
+    │   │   ├── ProductDto.cs
+    │   │   ├── WarehouseDto.cs
+    │   │   └── ImportResult.cs
+    │   └── Import/
+    │       ├── ProductCsvImporter.cs
+    │       ├── ProductJsonImporter.cs
+    │       └── MixedCsvImporter.cs
+    └── Cli/
         ├── Cli.csproj
         └── Program.cs
 ```
 
-## 3. Збірка та запуск
+### Призначення компонентів
 
-**Збірка проєкту:**
-```bash
+* **`src/Core` (Class Library):**
+  * містить DTO-моделі та логіку імпорту;
+  * містить інформацію про середовище виконання;
+  * компілюється у `.dll`;
+  * не залежить від `Cli`.
+
+* **`src/Cli` (Console Application):**
+  * обробляє аргументи командного рядка;
+  * перевіряє існування файлу;
+  * вибирає потрібний імпортер;
+  * виводить записи, помилки та статистику.
+
+* **Правило залежностей:** `Cli → Core`.
+
+---
+
+## 3. Інструкція зі збірки та запуску
+
+### Збірка всієї системи
+
+```bash id="wyu45b"
 dotnet build
 ```
 
-**Сценарії запуску:**
-```bash
-# Імпорт стандартного CSV (data/sample.csv)
+### Збірка бібліотеки Core
+
+```bash id="b9i1ow"
+dotnet build src/Core/Core.csproj
+```
+
+### Основні сценарії запуску
+
+```bash id="xm9x73"
+# Імпорт стандартного CSV-файлу
 dotnet run --project src/Cli
+
+# Імпорт коректного CSV-файлу
+dotnet run --project src/Cli -- data/correct.csv
 
 # Імпорт JSON-файлу
 dotnet run --project src/Cli -- data/sample.json
 
-# Імпорт змішаного CSV-файлу
+# Імпорт змішаного CSV
 dotnet run --project src/Cli -- data/mixed.csv
 
-# Системна інформація
+# Перегляд інформації про середовище
 dotnet run --project src/Cli -- --info
 ```
 
-## 4. Формат даних та обробка помилок
+---
 
-* **CSV:** Кодування UTF-8, роздільник `;`. Заголовок пропускається автоматично.
-* **Числа:** Парсяться через `CultureInfo.InvariantCulture`.
-* **Відмовостійкість:** Помилкові рядки не "крашать" програму. Результат збирається у `ImportResult<T>`, який містить список успішних записів та масив локалізованих помилок (з номерами рядків).
+## 4. Формати даних та імпорт
 
-## 5. Режими публікації (win-x64)
+* **Кодування:** UTF-8.
+* **Роздільник CSV:** `;`.
+* **Основний формат:**
 
-| Режим публікації | Команда (`dotnet publish src/Cli -c Release -r win-x64...`) | Розмір | Потрібен .NET |
-| :--- | :--- | :--- | :--- |
-| **Framework-dependent** | `--self-contained false` | ~200 КБ | Так |
-| **Self-contained** | `--self-contained true` | ~76.6 МБ | Ні |
-| **Single-File** | `--self-contained true -p:PublishSingleFile=true` | ~70.1 МБ | Ні |
-| **Trimmed** | `... -p:PublishSingleFile=true -p:PublishTrimmed=true` | ~12.5 МБ | Ні |
-
-*Примітка: Trimming суттєво зменшує розмір файлу, але може зламати серіалізацію JSON, оскільки видаляє класи, які викликаються динамічно через рефлексію.*
-
-**Прямий запуск після публікації:**
-```cmd
-.\publish\self-contained\Cli.exe
-.\publish\self-contained\Cli.exe ..\..\data\sample.csv
+```text id="9dj7vn"
+id;sku;name;unit;quantity
 ```
 
-## 6. Multi-targeting
-Бібліотека `Core` збирається одночасно під `net8.0` та `net10.0`. Для перевірки використано умовну компіляцію:
+Приклад:
 
-```csharp
+```text id="ktsb37"
+P-001;ARO-MILK-900;Молоко ARO 2.5% 900мл;шт;48
+```
+
+Для представлення даних використовуються `record`-типи:
+
+* `ProductDto` — інформація про товар;
+* `WarehouseDto` — інформація про склад;
+* `ImportResult<T>` — успішно імпортовані записи та список помилок.
+
+Розбір CSV реалізовано через `switch expression` і pattern matching. Використовуються list patterns, property patterns, `or`, `when` та `TryParse`.
+
+Пошкоджений рядок не припиняє весь імпорт. Помилка додається до списку `Errors` разом із номером рядка.
+
+Приклад статистики:
+
+```text id="6tptbd"
+Статистика: усього 13 / прийнято 10 / пропущено 3 / помилок 23,08%
+```
+
+### Додаткові завдання
+
+Реалізовано:
+
+* імпорт JSON через `System.Text.Json`;
+* змішаний CSV:
+  * `P` — товар;
+  * `W` — склад;
+* статистику імпорту: усього / прийнято / пропущено / % помилок.
+
+---
+
+## 5. Дослідження режимів публікації (.NET Publish)
+
+Під час попередніх лабораторних робіт досліджено способи публікації застосунку для `win-x64`.
+
+| Режим публікації | Розмір каталогу | Потрібен .NET Runtime |
+| :--- | ---: | :---: |
+| **Framework-dependent** | ≈ 199 КБ | Так |
+| **Self-contained** | ≈ 76.6 МБ | Ні |
+| **Single-File** | ≈ 70.1 МБ | Ні |
+| **Trimmed Single-File** | ≈ 12.5 МБ | Ні |
+
+### Framework-dependent
+
+```bash id="ooei7j"
+dotnet publish src/Cli -c Release -r win-x64 --self-contained false
+```
+
+### Self-contained
+
+```bash id="zkjx8z"
+dotnet publish src/Cli -c Release -r win-x64 --self-contained true
+```
+
+### Single-File
+
+```bash id="u6clpb"
+dotnet publish src/Cli -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true
+```
+
+### Trimmed Single-File
+
+```bash id="w1yg9n"
+dotnet publish src/Cli -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true
+```
+
+---
+
+## 6. Multi-targeting та умовна компіляція
+
+Бібліотеку `src/Core` налаштовано на збірку під дві версії платформи:
+
+```xml id="8tayzv"
+<TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+```
+
+Після виконання:
+
+```bash id="pd4aq2"
+dotnet build
+```
+
+формуються окремі збірки:
+
+```text id="894ygf"
+src/Core/bin/Debug/net8.0/Core.dll
+src/Core/bin/Debug/net10.0/Core.dll
+```
+
+У коді використовується умовна компіляція:
+
+```csharp id="fknku3"
 #if NET10_0_OR_GREATER
     private const string CurrentBuildNote = "Збірка під net10.0";
 #else
     private const string CurrentBuildNote = "Збірка під net8.0";
 #endif
 ```
+
+Це дозволяє компілювати бібліотеку `Core` під декілька версій .NET без дублювання проєкту.

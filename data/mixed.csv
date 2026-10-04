@@ -1,0 +1,8 @@
+# P;id;sku;name;unit;quantity
+# W;id;name;city
+P;P-001;ARO-MILK-900;Молоко ARO 2.5% 900мл;шт;48
+W;W-001;METRO Львів;Львів
+P;P-002;METRO-RICE-1KG;Рис Metro Chef довгозернистий 1кг;шт;30
+W;W-002;METRO Київ;Київ
+P;P-003;RIOBA-COFFEE-1KG;Кава Rioba зернова 1кг;шт;багато
+X;X-001;невідомі;дані
