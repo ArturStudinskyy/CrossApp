@@ -6,6 +6,13 @@ using Core.Import;
 
 Console.OutputEncoding = Encoding.UTF8;
 
+if (args.Any(a => a.Equals("--lab04",
+    StringComparison.OrdinalIgnoreCase)))
+{
+    Lab04Demo.Run();
+    return 0;
+}
+
 bool infoMode = args.Any(
     a => a.Equals(
         "--info",

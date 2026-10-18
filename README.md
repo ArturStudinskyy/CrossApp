@@ -215,3 +215,34 @@ src/Core/bin/Debug/net10.0/Core.dll
 ```
 
 Це дозволяє компілювати бібліотеку `Core` під декілька версій .NET без дублювання проєкту.
+
+## Лабораторна №4 — Доменна модель складу
+
+У `Core.Domain` створено доменні сутності `Product`, `StockBatch`, `Movement` із
+приватними конструкторами, фабриками та захищеним станом. DTO з лабораторної №3
+збережено: `Product.ToDto()` і `Product.FromDto()` підтримують також поле `Note`.
+
+### Інваріанти
+
+- Id, SKU, назва товару й одиниця вимірювання не можуть бути порожніми (`ArgumentException`).
+- Початкова кількість не може бути від'ємною (`ArgumentOutOfRangeException`).
+- Прихід і видача мають бути додатними (`ArgumentOutOfRangeException`).
+- Не можна видати більше, ніж є на складі або в партії (`InvalidOperationException`).
+- Партія повинна належати обраному товару (`InvalidOperationException`).
+- `Movement` дозволяє лише переходи Draft → Confirmed або Draft → Cancelled (`InvalidOperationException`).
+
+### Додаткові завдання
+
+1. `ProductDomainImporter.Convert` обробляє `ImportResult<ProductDto>` і повертає
+   `ImportResult<Product>` з успішними сутностями та помилками.
+2. `WarehouseStockService.IssueFromBatch` перевіряє зв'язок і залишки двох сутностей.
+3. `MovementStatus` та `Movement.ChangeStatus` реалізують переходи через `switch expression`.
+
+### Запуск
+
+```powershell
+dotnet build
+dotnet run --project src/Cli -- --lab04
+```
+
+Демонстрація містить успішний сценарій, порушення інваріантів і всі три додаткові завдання.
