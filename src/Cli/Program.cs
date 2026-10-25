@@ -28,13 +28,29 @@ if (args.Any(a => a.Equals("--lab05",
         "catalog.json"
     );
 
-    ICatalogStore store = useFile
-        ? new FileCatalogStore(dataPath)
-        : new InMemoryCatalogStore(SampleData.Products());
+    bool useFactory = args.Any(a => a.Equals(
+        "--factory", StringComparison.OrdinalIgnoreCase));
+    bool useCache = args.Any(a => a.Equals(
+        "--cache", StringComparison.OrdinalIgnoreCase));
+
+    ICatalogStore baseStore = useFactory
+        ? StoreFactory.Create(args)
+        : (useFile
+            ? new FileCatalogStore(dataPath)
+            : new InMemoryCatalogStore(SampleData.Products()));
+
+    ICatalogStore store = useCache
+        ? new CachingCatalogStore(baseStore)
+        : baseStore;
 
     var service = new CatalogService(store);
-
     Lab05Demo.Run(service, store);
+
+    if (args.Any(a => a.Equals("--extras",
+        StringComparison.OrdinalIgnoreCase)))
+    {
+        Lab05ExtrasDemo.Run(service, store, baseStore, useFactory);
+    }
     return 0;
 }
 

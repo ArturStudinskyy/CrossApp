@@ -267,3 +267,18 @@ dotnet run --project src/Cli -- --lab05
 dotnet run --project src/Cli -- --lab05 --file
 
 Перевірено роботу двох сховищ, збереження даних у JSON і обробку помилок.
+
+### Додаткові завдання лабораторної №5
+
+1. `CachingCatalogStore` — декоратор над `ICatalogStore`, який кешує `List()` та `GetById()` і скидає кеш після `Add`, `Update`, `Remove`.
+2. `CatalogService.Search(Func<Product, bool>)` — фільтрація товарів за довільним предикатом.
+3. `StoreFactory.Create(args)` — альтернативне створення файлового або оперативного сховища за прапорцем `--file`. Основна точка композиції лишається в `Program.cs`.
+
+Команди перевірки:
+
+```powershell
+dotnet run --project src/Cli -- --lab05 --extras
+dotnet run --project src/Cli -- --lab05 --extras --cache
+dotnet run --project src/Cli -- --lab05 --extras --cache --factory
+dotnet run --project src/Cli -- --lab05 --extras --cache --factory --file
+```
