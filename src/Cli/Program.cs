@@ -1,8 +1,11 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 using Core;
 using Core.Dto;
 using Core.Import;
+using Core.Abstractions;
+using Core.Storage;
+using Core.Services;
 
 Console.OutputEncoding = Encoding.UTF8;
 
@@ -10,6 +13,28 @@ if (args.Any(a => a.Equals("--lab04",
     StringComparison.OrdinalIgnoreCase)))
 {
     Lab04Demo.Run();
+    return 0;
+}
+
+if (args.Any(a => a.Equals("--lab05",
+    StringComparison.OrdinalIgnoreCase)))
+{
+    bool useFile = args.Any(a => a.Equals(
+        "--file", StringComparison.OrdinalIgnoreCase));
+
+    string dataPath = Path.Combine(
+        AppContext.BaseDirectory,
+        "data",
+        "catalog.json"
+    );
+
+    ICatalogStore store = useFile
+        ? new FileCatalogStore(dataPath)
+        : new InMemoryCatalogStore(SampleData.Products());
+
+    var service = new CatalogService(store);
+
+    Lab05Demo.Run(service, store);
     return 0;
 }
 

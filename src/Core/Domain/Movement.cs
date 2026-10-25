@@ -32,7 +32,9 @@ public sealed class Movement
         bool allowed = (Status, newStatus) switch
         {
             (MovementStatus.Draft, MovementStatus.Confirmed) => true,
+            (MovementStatus.Confirmed, MovementStatus.Draft) => true,
             (MovementStatus.Draft, MovementStatus.Cancelled) => true,
+            (MovementStatus.Cancelled, MovementStatus.Draft) => true,
             _ => false
         };
         if (!allowed)
