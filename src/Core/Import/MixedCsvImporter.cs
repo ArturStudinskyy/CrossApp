@@ -55,6 +55,9 @@ public static class MixedCsvImporter
 
         return parts switch
         {
+            ["P", "", _, _, _, _]
+                => new ParseFailed("у товару Id порожній"),
+
             ["P", _, "", _, _, _]
                 or ["P", _, _, "", _, _]
                 => new ParseFailed(

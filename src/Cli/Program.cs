@@ -16,7 +16,8 @@ if (args.Any(a => a.Equals("--lab04",
     return 0;
 }
 
-if (args.Any(a => a.Equals("--lab05",
+bool lab06 = args.Any(a => a.Equals("--lab06", StringComparison.OrdinalIgnoreCase));
+if (lab06 || args.Any(a => a.Equals("--lab05",
     StringComparison.OrdinalIgnoreCase)))
 {
     bool useFile = args.Any(a => a.Equals(
@@ -44,13 +45,14 @@ if (args.Any(a => a.Equals("--lab05",
         : baseStore;
 
     var service = new CatalogService(store);
-    Lab05Demo.Run(service, store);
-
-    if (args.Any(a => a.Equals("--extras",
-        StringComparison.OrdinalIgnoreCase)))
+    if (lab06)
     {
-        Lab05ExtrasDemo.Run(service, store, baseStore, useFactory);
+        Lab06Demo.Run(service, store, args.Any(a => a.Equals("--extras",
+            StringComparison.OrdinalIgnoreCase)));
+        return 0;
     }
+    Lab05Demo.Run(service, store, baseStore, useFactory,
+        args.Any(a => a.Equals("--extras", StringComparison.OrdinalIgnoreCase)));
     return 0;
 }
 

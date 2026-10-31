@@ -31,7 +31,7 @@ public static class ProductJsonImporter
             {
                 ProductDto product = deserialized[i];
 
-                if (string.IsNullOrWhiteSpace(product.Id) ||
+                if (product is null || string.IsNullOrWhiteSpace(product.Id) ||
                     string.IsNullOrWhiteSpace(product.Sku) ||
                     string.IsNullOrWhiteSpace(product.Name) ||
                     string.IsNullOrWhiteSpace(product.Unit) ||
