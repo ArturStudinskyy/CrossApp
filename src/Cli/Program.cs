@@ -9,6 +9,21 @@ using Core.Services;
 
 Console.OutputEncoding = Encoding.UTF8;
 
+bool lab07 = args.Any(a => a.Equals("--lab07", StringComparison.OrdinalIgnoreCase)) ||
+    args.Any(a => a.StartsWith("report-", StringComparison.OrdinalIgnoreCase));
+if (lab07)
+{
+    bool useFile = args.Any(a => a.Equals("--file", StringComparison.OrdinalIgnoreCase));
+    bool useFactory = args.Any(a => a.Equals("--factory", StringComparison.OrdinalIgnoreCase));
+    bool useCache = args.Any(a => a.Equals("--cache", StringComparison.OrdinalIgnoreCase));
+    string dataPath = Path.Combine(AppContext.BaseDirectory, "data", "catalog.json");
+    ICatalogStore baseStore = useFactory ? StoreFactory.Create(args) :
+        useFile ? new FileCatalogStore(dataPath) :
+        new InMemoryCatalogStore(SampleData.Products());
+    ICatalogStore store = useCache ? new CachingCatalogStore(baseStore) : baseStore;
+    return Lab07Demo.Run(new CatalogService(store), args);
+}
+
 if (args.Any(a => a.Equals("--lab04",
     StringComparison.OrdinalIgnoreCase)))
 {

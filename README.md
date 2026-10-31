@@ -333,3 +333,73 @@ dotnet run --project src/Cli -- --lab06 --extras --file --cache --factory
 попередніх лабораторних. Команди для повторення наведені вище.
 
 Логіка сповіщень Cli зібрана у NotificationSinks.cs.
+
+## Лабораторна №7 — звіти через LINQ to Objects
+
+`ReportService` у Core приймає `IEnumerable<Product>` і повертає DTO, тому
+логіка звітів не залежить від сховища та способу виведення. У Cli доступні
+чотири підкоманди:
+
+```powershell
+dotnet run --project src/Cli -- report-top
+dotnet run --project src/Cli -- report-low
+dotnet run --project src/Cli -- report-groups
+dotnet run --project src/Cli -- report-sum
+dotnet run --project src/Cli -- --lab07 --demo
+dotnet run --project src/Cli -- --lab07 --extras
+```
+
+`--lab07` без назви звіту запускає `report-top`; `--file`, `--cache` та
+`--factory` з попередніх робіт залишаються доступними. За порожнього каталогу
+списки показують «Немає записів», а підсумки повертають чотири нулі.
+`SampleData` має 19 товарів, чотири одиниці виміру та три товари із
+залишком менше 10. Топ-5 сортується за кількістю та унікальним Id, тому
+повторні запуски дають той самий порядок. За базовими даними сума становить
+752, середнє — 39,58, найбільший залишок — 90.
+
+### Запити та відкладене виконання
+
+| Метод | Питання | Оператори |
+| --- | --- | --- |
+| `LowStock` | Яких товарів менше порога? | `Where`, `OrderBy`, `ThenBy`, `Select`, `ToList` |
+| `TopByQuantity` | Які N товарів мають найбільший залишок? | `TopBy`, `OrderByDescending`, `ThenBy`, `Take`, `Select` |
+| `ByUnit` | Скільки позицій і одиниць у кожній групі? | `GroupBy`, `Count`, `Sum`, `OrderByDescending` |
+| `Totals` | Які загальна, середня і максимальна кількості? | `ToList`, `Sum`, `Average`, `Max` |
+
+Методне групування:
+
+```csharp
+source.GroupBy(p => p.Unit, StringComparer.OrdinalIgnoreCase)
+    .Select(g => new GroupSummary(g.Key, g.Count(), g.Sum(p => p.Quantity)))
+    .OrderByDescending(g => g.TotalQuantity)
+    .ThenBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
+    .ToList();
+```
+
+У демо джерелом є локальний список із `service.All().ToList()`, бо `All()`
+повертає новий знімок. Побудова `source.Where(...)` ще не виконує запит:
+перший `Count()` бачить 3 дефіцитні позиції, після `source.Add(...)` другий
+`Count()` бачить 4. `ToList()` створює знімок; після `source.Clear()` у ньому
+залишаються 4 записи. `Where` і `Select` працюють відкладено; `Count`, `Sum`
+та `ToList` запускають перебір. `OrderBy` і `GroupBy` під час перебору
+буферизують елементи, тому повторне виконання може бути дорогим.
+
+### Додаткові завдання
+
+1. `TopMovements` робить `Join` товарів і переміщень за `Product.Id` /
+   `Movement.ProductId` та повертає DTO `MovementLine`.
+2. Узагальнений метод-розширення `TopBy<T>` із другим ключем використано
+   у двох звітах: `TopByQuantity` та `TopMovements`.
+3. `ByUnitQuery` задає групування у синтаксисі `from/group/into/let/orderby/select`.
+   Методний синтаксис компактніший для ланцюжка фільтрів і сортування;
+   синтаксис запиту виразніше показує групу та її агрегат. На поточних
+   даних обидва способи повертають однакові підсумки. Методна версія
+   групує з `OrdinalIgnoreCase`, а версія запиту нормалізує ключ до нижнього
+   регістру перед групуванням.
+4. `--extras` вимірює `Stopwatch` на 100 000 згенерованих товарів: запит
+   `Where().TopBy()` порівнюється з `Where().ToList().TopBy()`. Перед
+   вимірюванням перевіряється тотожність результатів, виконується прогрів,
+   а друкується медіана п'яти запусків. Проміжний список потребує
+   додаткової пам'яті; час залежить від комп'ютера і стану процесу.
+
+Звіт лабораторної №7 зберігається окремо від репозиторію.

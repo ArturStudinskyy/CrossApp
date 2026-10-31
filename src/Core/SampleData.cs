@@ -20,6 +20,10 @@ public static class SampleData
         Product.Create("P-012", "METRO-FLOUR-1KG", "Борошно Metro Chef 1кг", "кг", 70),
         Product.Create("P-013", "ARO-SALT-1KG", "Сіль ARO 1кг", "кг", 90),
         Product.Create("P-014", "ARO-JUICE-1L", "Сік ARO 1л", "шт", 45),
-        Product.Create("P-015", "METRO-PASTA-1KG", "Макарони Metro Chef 1кг", "шт", 35)
+        Product.Create("P-015", "METRO-PASTA-1KG", "Макарони Metro Chef 1кг", "шт", 35),
+        Product.Create("P-016", "ARO-SPICE-50", "Спеції ARO 50г", "уп", 3),
+        Product.Create("P-017", "METRO-COCOA-1KG", "Какао Metro Chef 1кг", "кг", 7),
+        Product.Create("P-018", "ARO-CHOC-100", "Шоколад ARO 100г", "шт", 5),
+        Product.Create("P-019", "METRO-JUICE-BULK", "Сік Metro Chef наливний", "л", 22)
     };
 }
